@@ -28,34 +28,43 @@ namespace Data_String_Regex {
 
   static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
 
-  static constexpr auto kRegexOpts =
+  static constexpr auto kBaseRegexOpts =
     std::regex_constants::ECMAScript | std::regex_constants::collate;
 
-  static auto Flags(const string& s) -> std::regex_constants::syntax_option_type {
-    auto flags = kRegexOpts;
-    if (s.find("i") != string::npos) {
-      flags |= std::regex_constants::icase;
+  static auto OptionsFromRecord(const any& rec) ->
+      std::regex_constants::syntax_option_type {
+    auto opts = kBaseRegexOpts;    
+    if (map::get(symbol(ignoreCase), rec)) {
+      opts |= std::regex_constants::icase;
     }
-    if (s.find("g") != string::npos) {
-      std::cerr << "regex 'global' option not supported" << std::endl;
+    if (record::get(symbol(multiline), rec)) {
+      throw runtime_error("Regex 'multiline' option not supported");
     }
-    if (s.find("m") != string::npos) {
-      std::cerr << "regex 'multiline' option not supported" << std::endl;
+    if (record::get(symbol(sticky), rec)) {
+      throw runtime_error("Regex 'sticky' option not supported");
     }
-    if (s.find("u") != string::npos) {
-      std::cerr << "regex 'unicode' option not supported" << std::endl;
+    if (record::get(symbol(unicode), rec)) {
+      throw runtime_error("Regex 'unicode' option not supported");
     }
-    if (s.find("y") != string::npos) {
-      std::cerr << "regex 'sticky' option not supported" << std::endl;
-    }
-    return flags;
+    return opts;
+  }
+
+  static inline auto MatchFlagsFromRecord(const any& rec) ->
+      std::regex_constants::match_flag_type {
+    return record::get(symbol(global), rec) ?
+        std::regex_constants::match_flag_type::match_default
+      : std::regex_constants::match_flag_type::format_first_only;
   }
 
   struct Regex {
     const string str;
-    const std::regex expr;
-    Regex(const string& s,
-          std::regex_constants::syntax_option_type o) : str(s), expr(s, o) {}
+    const std::regex regex;
+    const any flagsRecord;
+
+    Regex(const string& s, const any& f)
+      : str(s),
+        regex(s, OptionsFromRecord(f)),
+        flagsRecord(f) {}
   };
 
   // foreign import showRegex' :: Regex -> String
@@ -76,7 +85,7 @@ namespace Data_String_Regex {
                    const string& s1,
                    const string& s2) -> any {
     try {
-      return right(make_managed<Regex>(s1, Flags(s2)));
+      return right(make_managed<Regex>(s1, data::get<1>(parseFlags(s2))));
     } catch (std::exception& e) {
       return left(e.what());
     }
@@ -91,20 +100,13 @@ namespace Data_String_Regex {
   // foreign import flags' :: Regex -> RegexFlagsRec
   //
   auto flags$prime(const any& r) -> any {
-    const auto flags = cast<Regex>(r).expr.flags();
-    return record::make(
-      { symbol(global),     false },
-      { symbol(ignoreCase), flags & std::regex_constants::icase },
-      { symbol(multiline),  false },
-      { symbol(sticky),     false },
-      { symbol(unicode),    false }
-    );
+    return cast<Regex>(r).flagsRecord;
   }
 
   // foreign import test :: Regex -> String -> Boolean
   //
-  auto test(const any&, const string&) -> bool {
-    throw runtime_error("Incomplete implementation for Data_String_Regex::test");
+  auto test(const any& r, const string& s) -> bool {
+    return std::regex_search(s, cast<Regex>(r).regex);
   }
 
   // foreign import _match
@@ -114,20 +116,52 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe (Array (Maybe String))
   //
-  auto $_match(const any&, const any&, const any&, const string&) -> any {
-    throw runtime_error("Incomplete implementation for Data_String_Regex::_match");
+  auto $_match(const any& just,
+               const any& nothing,
+               const any& r,
+               const string& s) -> any {
+    const auto& rx = cast<Regex>(r);
+    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    std::smatch m;
+    if (std::regex_match(s, m, rx.regex, mflags)) {
+      any::array list;
+      for (auto i = 0; i < m.size(); i++) {
+        const auto& match = m[i];
+        list.emplace_back(match.length() ? just(match.str()) : nothing);
+      }
+      return just(list);
+    } else {
+      return nothing;
+    }
   }
 
   // foreign import replace :: Regex -> String -> String -> String
   //
-  auto replace(const any&, const string&, const string&) -> string {
-    throw runtime_error("Incomplete implementation for Data_String_Regex::replace");
+  auto replace(const any& r, const string& s1, const string& s2) -> string {
+    const auto& rx = cast<Regex>(r);
+    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    return std::regex_replace(s2, rx.regex, s1, mflags);
   }
 
   // foreign import replace' :: Regex -> (String -> Array String -> String) -> String -> String
   //
-  auto replace$prime(const any&, const any&, const string&) -> string {
-    throw runtime_error("Incomplete implementation for Data_String_Regex::replace'");    
+  auto replace$prime(const any& r, const any& f, const string& s2) -> string {
+    const auto& rx = cast<Regex>(r);
+    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    std::smatch m;
+    if (std::regex_search(s2, m, rx.regex, mflags)) {
+      const string match = m[0].str();
+      any::array submatches;
+      for (auto i = 1; i < m.size(); i++) {
+        submatches.emplace_back(m[i].str());
+      }
+      return std::regex_replace(s2,
+                                rx.regex,
+                                static_cast<const string&>(f(match)(submatches)),
+                                mflags);
+    } else {
+      return s2;
+    }
   }
 
   // foreign import _search
@@ -137,14 +171,26 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_search(const any&, const any&, const any&, const string&) -> string {
-    throw runtime_error("Incomplete implementation for Data_String_Regex::_search");
+  auto $_search(const any& just,
+                const any& nothing,
+                const any& r,
+                const string& s) -> any {
+    std::smatch m;
+    return std::regex_search(s, m, cast<Regex>(r).regex) ? just(m.position()) : nothing;
   }
 
   // foreign import split :: Regex -> String -> Array String
   //
-  auto split(const any&, const string&) -> any::array {
-    throw runtime_error("Incomplete implementation for Data_String_Regex::split");
+  auto split(const any& r, const string& s) -> any::array {
+    const auto& rx = cast<Regex>(r);
+    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    if (std::regex_search(s, rx.regex, mflags)) {
+      const auto ss = std::regex_replace(s, rx.regex, "\0\f\0", mflags);
+      return Data_String::split("\0\f\0", ss);
+    } else {
+      return any::array{{ s }};
+    }
   }
 
 }
+

@@ -69,7 +69,7 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_search(const any&, const any&, const any&, const string&) -> string;
+  auto $_search(const any&, const any&, const any&, const string&) -> any;
 
   // foreign import split :: Regex -> String -> Array String
   //
