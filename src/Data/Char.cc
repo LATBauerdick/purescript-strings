@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Module      :  Coerce.hh
+// Module      :  Char.cc
 // Copyright   :  (c) Andy Arvanitis 2016
 // License     :  MIT
 //

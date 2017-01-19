@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Module      :  Coerce.hh
+// Module      :  Regex.cc
 // Copyright   :  (c) Andy Arvanitis 2016
 // License     :  MIT
 //
