@@ -49,11 +49,9 @@ namespace Data_String_Regex {
     return opts;
   }
 
-  static inline auto MatchFlagsFromRecord(const any& rec) ->
-      std::regex_constants::match_flag_type {
-    return record::get(symbol(global), rec) ?
-        std::regex_constants::match_flag_type::match_default
-      : std::regex_constants::match_flag_type::format_first_only;
+  static inline auto RecordToFlags(const any& rec) -> std::regex_constants::match_flag_type {
+    return record::get(symbol(global), rec) ? std::regex_constants::match_default
+                                            : std::regex_constants::format_first_only;
   }
 
   struct Regex {
@@ -121,7 +119,7 @@ namespace Data_String_Regex {
               const any& r,
               const string& s) -> any {
     const auto& rx = cast<Regex>(r);
-    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    const auto mflags = RecordToFlags(rx.flagsRecord);
     std::smatch m;
     if (std::regex_match(s, m, rx.regex, mflags)) {
       any::array list;
@@ -139,7 +137,7 @@ namespace Data_String_Regex {
   //
   auto replace(const any& r, const string& s1, const string& s2) -> string {
     const auto& rx = cast<Regex>(r);
-    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    const auto mflags = RecordToFlags(rx.flagsRecord);
     return std::regex_replace(s2, rx.regex, s1, mflags);
   }
 
@@ -147,7 +145,7 @@ namespace Data_String_Regex {
   //
   auto replace$prime(const any& r, const any& f, const string& s2) -> string {
     const auto& rx = cast<Regex>(r);
-    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    const auto mflags = RecordToFlags(rx.flagsRecord);
     std::smatch m;
     if (std::regex_search(s2, m, rx.regex, mflags)) {
       const string match = m[0].str();
@@ -183,7 +181,7 @@ namespace Data_String_Regex {
   //
   auto split(const any& r, const string& s) -> any::array {
     const auto& rx = cast<Regex>(r);
-    const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
+    const auto mflags = RecordToFlags(rx.flagsRecord);
     if (std::regex_search(s, rx.regex, mflags)) {
       const auto ss = std::regex_replace(s, rx.regex, "\0\f\0", mflags);
       return Data_String::split("\0\f\0", ss);
