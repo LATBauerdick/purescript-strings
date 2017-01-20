@@ -27,7 +27,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Char
   //
-  auto $_charAt(const any&, const any&, const int, const string&) -> any;
+  auto _charAt(const any&, const any&, const int, const string&) -> any;
 
   // foreign import singleton :: Char -> String
   //
@@ -40,7 +40,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_charCodeAt(const any&, const any&, const int, const string&) -> any;
+  auto _charCodeAt(const any&, const any&, const int, const string&) -> any;
 
   // foreign import _toChar
   //   :: (forall a. a -> Maybe a)
@@ -48,7 +48,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Char
   //
-  auto $_toChar(const any&, const any&, const string&) -> any;
+  auto _toChar(const any&, const any&, const string&) -> any;
 
   // foreign import fromCharArray :: Array Char -> String
   //
@@ -61,7 +61,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_indexOf(const any&, const any&, const string&, const string&) -> any;
+  auto _indexOf(const any&, const any&, const string&, const string&) -> any;
 
   // foreign import _indexOf'
   //   :: (forall a. a -> Maybe a)
@@ -71,7 +71,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_indexOf$prime(const any&, const any&, const string&, const int, const string&) -> any;
+  auto _indexOf$prime(const any&, const any&, const string&, const int, const string&) -> any;
 
   // foreign import _lastIndexOf
   //   :: (forall a. a -> Maybe a)
@@ -80,7 +80,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_lastIndexOf(const any&, const any&, const string&, const string&) -> any;
+  auto _lastIndexOf(const any&, const any&, const string&, const string&) -> any;
 
   // foreign import _lastIndexOf'
   //   :: (forall a. a -> Maybe a)
@@ -90,7 +90,7 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_lastIndexOf$prime(const any&, const any&, const string&, const int, const string&) -> any;
+  auto _lastIndexOf$prime(const any&, const any&, const string&, const int, const string&) -> any;
 
   // foreign import length :: String -> Int
   //
@@ -104,7 +104,7 @@ namespace Data_String {
   //   -> String
   //   -> Ordering
   //
-  auto $_localeCompare(const any&, const any&, const any&, const string&, const string&) -> any;
+  auto _localeCompare(const any&, const any&, const any&, const string&, const string&) -> any;
 
   // foreign import replace :: Pattern -> Replacement -> String -> String
   //
@@ -136,7 +136,7 @@ namespace Data_String {
   //                         -> String
   //                         -> Maybe (Array String)
   //
-  auto $_splitAt(const any&, const any&, const int, const string&) -> any;
+  auto _splitAt(const any&, const any&, const int, const string&) -> any;
 
   // foreign import toCharArray :: String -> Array Char
   //

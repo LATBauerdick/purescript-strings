@@ -116,10 +116,10 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe (Array (Maybe String))
   //
-  auto $_match(const any& just,
-               const any& nothing,
-               const any& r,
-               const string& s) -> any {
+  auto _match(const any& just,
+              const any& nothing,
+              const any& r,
+              const string& s) -> any {
     const auto& rx = cast<Regex>(r);
     const auto mflags = MatchFlagsFromRecord(rx.flagsRecord);
     std::smatch m;
@@ -171,10 +171,10 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_search(const any& just,
-                const any& nothing,
-                const any& r,
-                const string& s) -> any {
+  auto _search(const any& just,
+               const any& nothing,
+               const any& r,
+               const string& s) -> any {
     std::smatch m;
     return std::regex_search(s, m, cast<Regex>(r).regex) ? just(m.position()) : nothing;
   }

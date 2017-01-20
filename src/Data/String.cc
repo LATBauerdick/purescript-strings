@@ -33,10 +33,10 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Char
   //
-  auto $_charAt(const any& just,
-                const any& nothing,
-                const int i,
-                const string& s) -> any {
+  auto _charAt(const any& just,
+               const any& nothing,
+               const int i,
+               const string& s) -> any {
     if (i < 0 or i >= s.size()) {
       return nothing;
     } else {
@@ -57,10 +57,10 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_charCodeAt(const any& just,
-                    const any& nothing,
-                    const int i,
-                    const string& s) -> any {
+  auto _charCodeAt(const any& just,
+                   const any& nothing,
+                   const int i,
+                   const string& s) -> any {
     if (i < 0 or i >= s.size()) {
       return nothing;
     } else {
@@ -74,9 +74,9 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Char
   //
-  auto $_toChar(const any& just,
-                const any& nothing,
-                const string& s) -> any {
+  auto _toChar(const any& just,
+               const any& nothing,
+               const string& s) -> any {
     const auto utf32 = utf32conv.from_bytes(s);
     return utf32.size() == 1 ? just(utf32.front()) : nothing;
   }
@@ -98,10 +98,10 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_indexOf(const any& just,
-                 const any& nothing,
-                 const string& x,
-                 const string& s) -> any {
+  auto _indexOf(const any& just,
+                const any& nothing,
+                const string& x,
+                const string& s) -> any {
     const auto i = s.find(x);
     assert(i == string::npos || i <= std::numeric_limits<int>::max());
     return i == string::npos ? nothing : just(static_cast<int>(i));
@@ -115,11 +115,11 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_indexOf$prime(const any& just,
-                       const any& nothing,
-                       const string& x,
-                       const int startAt,
-                       const string& s) -> any {
+  auto _indexOf$prime(const any& just,
+                      const any& nothing,
+                      const string& x,
+                      const int startAt,
+                      const string& s) -> any {
     if (startAt < 0) {
       return nothing;
     }
@@ -135,10 +135,10 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_lastIndexOf(const any& just,
-                     const any& nothing,
-                     const string& x,
-                     const string& s) -> any {    
+  auto _lastIndexOf(const any& just,
+                    const any& nothing,
+                    const string& x,
+                    const string& s) -> any {    
     const auto i = s.rfind(x);
     assert(i == string::npos || i <= std::numeric_limits<int>::max());
     return i == string::npos ? nothing : just(static_cast<int>(i));
@@ -152,11 +152,11 @@ namespace Data_String {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_lastIndexOf$prime(const any& just,
-                           const any& nothing,
-                           const string& x,
-                           const int startAt,
-                           const string& s) -> any {
+  auto _lastIndexOf$prime(const any& just,
+                          const any& nothing,
+                          const string& x,
+                          const int startAt,
+                          const string& s) -> any {
     if (startAt < 0 || startAt > s.size()) {
       return nothing;
     }
@@ -181,11 +181,11 @@ namespace Data_String {
   //   -> String
   //   -> Ordering
   //
-  auto $_localeCompare(const any& lt,
-                       const any& eq,
-                       const any& gt,
-                       const string& s1,
-                       const string& s2) -> any {
+  auto _localeCompare(const any& lt,
+                      const any& eq,
+                      const any& gt,
+                      const string& s1,
+                      const string& s2) -> any {
     // TODO: more testing needed
     const auto& collate = std::use_facet<std::collate<char>>(std::locale());
     const auto result = collate.compare(s1.c_str(), s1.c_str() + s1.size(),
@@ -262,10 +262,10 @@ namespace Data_String {
   //                         -> String
   //                         -> Maybe (Array String)
   //
-  auto $_splitAt(const any& just,
-                 const any& nothing,
-                 const int i,
-                 const string& s) -> any {    
+  auto _splitAt(const any& just,
+                const any& nothing,
+                const int i,
+                const string& s) -> any {    
     return i >= 0 && i < s.size() ? just(any::array{s.substr(0, i), s.substr(i)})
                                   : nothing;
   }

@@ -52,7 +52,7 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe (Array (Maybe String))
   //
-  auto $_match(const any&, const any&, const any&, const string&) -> any;
+  auto _match(const any&, const any&, const any&, const string&) -> any;
 
   // foreign import replace :: Regex -> String -> String -> String
   //
@@ -69,7 +69,7 @@ namespace Data_String_Regex {
   //   -> String
   //   -> Maybe Int
   //
-  auto $_search(const any&, const any&, const any&, const string&) -> any;
+  auto _search(const any&, const any&, const any&, const string&) -> any;
 
   // foreign import split :: Regex -> String -> Array String
   //
