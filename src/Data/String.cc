@@ -85,6 +85,7 @@ namespace Data_String {
   //
   auto fromCharArray(const any::array& xs) -> string {
     std::u32string utf32;
+    utf32.reserve(xs.size());
     for (auto it = xs.cbegin(), end = xs.cend(); it != end; it++) {
       utf32.push_back(*it);
     }
@@ -286,6 +287,7 @@ namespace Data_String {
   auto toLower(const string& s) -> string {
     // Note: does not convert unicode characters
     string result;
+    result.reserve(s.size());
     for (auto it = s.cbegin(), end = s.cend(); it != end; it++) {
       result.push_back(std::tolower(*it));
     }
@@ -297,6 +299,7 @@ namespace Data_String {
   auto toUpper(const string& s) -> string {
     // Note: does not convert unicode characters
     string result;
+    result.reserve(s.size());
     for (auto it = s.cbegin(), end = s.cend(); it != end; it++) {
       result.push_back(std::toupper(*it));
     }

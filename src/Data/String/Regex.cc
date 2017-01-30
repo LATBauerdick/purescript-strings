@@ -18,12 +18,6 @@
 #include <regex>
 #include "Regex.hh"
 
-define_symbol(global);
-define_symbol(ignoreCase);
-define_symbol(multiline);
-define_symbol(sticky);
-define_symbol(unicode);
-
 namespace Data_String_Regex {
 
   static std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utf32conv;
@@ -31,27 +25,26 @@ namespace Data_String_Regex {
   static constexpr auto kBaseRegexOpts =
     std::regex_constants::ECMAScript | std::regex_constants::collate;
 
-  static auto OptionsFromRecord(const any& rec) ->
-      std::regex_constants::syntax_option_type {
+  static auto OptionsFromRecord(const any& rec) -> std::regex_constants::syntax_option_type {
     auto opts = kBaseRegexOpts;    
-    if (map::get(symbol(ignoreCase), rec)) {
+    if (rec.at("ignoreCase")) {
       opts |= std::regex_constants::icase;
     }
-    if (record::get(symbol(multiline), rec)) {
+    if (rec.at("multiline")) {
       throw runtime_error("Regex 'multiline' option not supported");
     }
-    if (record::get(symbol(sticky), rec)) {
+    if (rec.at("sticky")) {
       throw runtime_error("Regex 'sticky' option not supported");
     }
-    if (record::get(symbol(unicode), rec)) {
+    if (rec.at("unicode")) {
       throw runtime_error("Regex 'unicode' option not supported");
     }
     return opts;
   }
 
   static inline auto RecordToFlags(const any& rec) -> std::regex_constants::match_flag_type {
-    return record::get(symbol(global), rec) ? std::regex_constants::match_default
-                                            : std::regex_constants::format_first_only;
+    return rec.at("global") ? std::regex_constants::match_default
+                            : std::regex_constants::format_first_only;
   }
 
   struct Regex {
@@ -186,9 +179,8 @@ namespace Data_String_Regex {
       const auto ss = std::regex_replace(s, rx.regex, "\0\f\0", mflags);
       return Data_String::split("\0\f\0", ss);
     } else {
-      return any::array{{ s }};
+      return any::array{ s };
     }
   }
 
 }
-
