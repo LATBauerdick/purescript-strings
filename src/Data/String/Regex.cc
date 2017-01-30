@@ -179,7 +179,7 @@ namespace Data_String_Regex {
       const auto ss = std::regex_replace(s, rx.regex, "\0\f\0", mflags);
       return Data_String::split("\0\f\0", ss);
     } else {
-      return any::array{ s };
+      return any::array{ { s } };
     }
   }
 
